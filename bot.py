@@ -4,8 +4,7 @@ import google.generativeai as genai
 
 # 1. مفاتيح التشغيل المعتمدة
 TELEGRAM_BOT_TOKEN = "8771234410:AAFhLDEnKCay-zckmfHB1iQcZMJ0RBDQDdA"
-# ضع هنا مفتاح API الخاص بـ Google AI Studio الذي يبدأ بـ AIzaSy (أو المفتاح المعتمد لديك)
-GEMINI_API_KEY = "PUT_YOUR_VALID_API_KEY_HERE"
+GEMINI_API_KEY = "AQ.Ab8RN6KjSEZSrrY5Nw-e5VPjT29EBqMJb97699Fpehz-GEUHfQ"
 
 # إعداد الاتصال
 genai.configure(api_key=GEMINI_API_KEY)
@@ -61,7 +60,7 @@ model = genai.GenerativeModel(
     system_instruction=MY_CUSTOM_PROMPT
 )
 
-# 4. معالجة رسائل الطلاب (التحقق من إرسال الصورة حصراً)
+# 3. معالجة رسائل الطلاب (التحقق من إرسال الصورة حصراً)
 @bot.message_handler(content_types=['text', 'photo'])
 def handle_student(message):
     try:
