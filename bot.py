@@ -1,6 +1,7 @@
 import os
 import telebot
 import google.generativeai as genai
+import time
 
 # 1. مفاتيح التشغيل المعتمدة
 TELEGRAM_BOT_TOKEN = "8771234410:AAFhLDEnKCay-zckmfHB1iQcZMJ0RBDQDdA"
@@ -9,6 +10,13 @@ GEMINI_API_KEY = "AQ.Ab8RN6KjSEZSrrY5Nw-e5VPjT29EBqMJb97699Fpehz-GEUHfQ"
 # إعداد الاتصال
 genai.configure(api_key=GEMINI_API_KEY)
 bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
+
+# **حل مشكلة التعارض (409 Conflict):** مسح أي اتصال سابق مع تيليجرام فوراً
+try:
+    bot.remove_webhook()
+    time.sleep(1)
+except Exception:
+    pass
 
 # 2. البرومبت الأمني والمنهجي الصارم (مع شرط إجبارية الصورة وعدم الهلوسة)
 MY_CUSTOM_PROMPT = """
