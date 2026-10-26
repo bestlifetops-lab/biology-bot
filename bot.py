@@ -4,7 +4,7 @@ import google.generativeai as genai
 
 # 1. مفاتيح التشغيل المعتمدة
 TELEGRAM_BOT_TOKEN = "8771234410:AAFhLDEnKCay-zckmfHB1iQcZMJ0RBDQDdA"
-GEMINI_API_KEY = "AQ.Ab8RN6IynPFeJoUrD2NrgI36c11FvBmSSmCC4uYRLe0RAYHQOg"
+GEMINI_API_KEY = "AQ.Ab8RN6JrvT3ir76iYlhvuQ0TGS3lHoL5Af7usMLrLzOFOQbfQg"
 
 # إعداد الاتصال
 genai.configure(api_key=GEMINI_API_KEY)
