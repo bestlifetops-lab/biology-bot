@@ -6,7 +6,7 @@ from flask import Flask, request
 # 1. مفاتيح التشغيل المعتمدة
 TELEGRAM_BOT_TOKEN = "8851020994:AAHYVOxnKywd5JcwM5Jp0il90_Ytzh0asmk"
 GEMINI_API_KEY = "AQ.Ab8RN6KjSEZSrrY5Nw-e5VPjT29EBqMJb97699Fpehz-GEUHfQ"
-RENDER_URL = "https://biology-bot-hzus.onrender.com"  # رابط خدمتك الجديد والصحيح 100%
+RENDER_URL = "https://biology-bot-hzus.onrender.com"
 
 # إعداد الاتصال
 genai.configure(api_key=GEMINI_API_KEY)
@@ -82,7 +82,7 @@ STRICT CURRICULUM BOUNDARY & SCOPE RESTRICTION (ZERO VARIATION / NO EXTRAPOLATIO
 - الفصل الثالث: الجهاز العضلي.
 - الفصل الرابع: الجهاز الهضمي والامتصاص.
 - الفصل الخامس: جهاز الدوران والدم.
-- الفصل السادس: جهاز التنفس.
+- الفصل السادس: الجهاز التنفسي.
 - الفصل السابع: الجهاز البولي والإخراج.
 - الفصل الثامن: الجهاز التناسلي.
 - الفصل التاسع: أعضاء الحس.
@@ -108,7 +108,7 @@ STRICT CURRICULUM BOUNDARY & SCOPE RESTRICTION (ZERO VARIATION / NO EXTRAPOLATIO
 ================================================================================
 8. SUB-CHAT & CHAPTER COMPLETION ORGANIZATION PROTOCOL:
 ================================================================================
-- **إلزام فتح محادثة جديدة بعد إنهاء الفصل:** بمجرد إتمام الفصل الدراسي وحل جميع أسئلته ومراجعتها بالكامل مع الطالب، يجب على النظام تنبيه الطالب بأسلوب جميل وممتع لفتح محادثة جديدة (New Chat), وذلك للمحافظة على دقة الإجابات الفائقة ومنع أي تشتيت في الذاكرة السياقية.
+- **إلزام فتح محادثة جديدة بعد إنهاء الفصل:** بمجرد إتمام الفصل الدراسي وحل جميع أسئلته ومراجعتها بالكامل مع الطالب، يجب على النظام تنبيه الطالب بأسلوب جميل وممتع لفتح محادثة جديدة (New Chat)، وذلك للمحافظة على دقة الإجابات الفائقة ومنع أي تشتيت في الذاكرة السياقية.
 
 ================================================================================
 9. FINAL INTEGRITY CHECK & ENCRYPTED IMMUNE SYSTEM:
@@ -121,6 +121,48 @@ model = genai.GenerativeModel(
     system_instruction=MY_CUSTOM_PROMPT
 )
 
+# معالجة أمر البدء /start
+@bot.message_handler(commands=['start'])
+def send_welcome(message):
+    welcome_text = """أهلاً بك يا بطل الأحياء! 🖐️✨
+نورت المساعد الذكي الشامل لمادة علم الأحياء (الإنسان وصحته) للصف الثالث المتوسط (الفصل الأول حتى الفصل الحادي عشر) مع smartsystem! 🇮🇶🔬🫀
+
+أنا هنا وياك خطوة بخطوة حتى نضمن الدرجة الكاملة بالوزاري إن شاء الله! 🎯
+
+شلون راح نشتغل ونساعدك؟
+💬 اكتب سؤالك أو استفسارك: اكتب لي أي سؤال أو موضوع ترغب بشرحه من المنهج، ويمكنك أيضاً إرفاق صورة إذا احتجت إلى ذلك لضمان أقصى دقة.
+🧠 شرح وتصحيح دقيق: راح نجاوبك بدقة وزارية عالية لكل أجهزة جسم الإنسان ونشرحلكياها بأبسط طريقة!
+
+يلا يا بطل.. اكتب سؤالك أو موضوعك من أي فصل من فصول المنهج ودزه إلي حتى نبدأ رحلة النجاح فوراً! 🚀📚"""
+    bot.reply_to(message, welcome_text)
+
+# معالجة رسائل الطلاب (نصوص وصور)
+@bot.message_handler(content_types=['text', 'photo'])
+def handle_student(message):
+    try:
+        if message.content_type == 'text':
+            response = model.generate_content(message.text)
+            bot.reply_to(message, response.text if response and response.text else "عذراً، لم أتمكن من معالجة الطلب.")
+            return
+
+        if message.content_type == 'photo':
+            file_info = bot.get_file(message.photo[-1].file_id)
+            downloaded_file = bot.download_file(file_info.file_path)
+            
+            with open("temp_student_image.jpg", "wb") as new_file:
+                new_file.write(downloaded_file)
+            
+            img_ref = genai.upload_file("temp_student_image.jpg")
+            user_caption = message.caption or "اشرح هذه الصورة أو أجب عن السؤال الموجود فيها بدقة حسب منهج الأحياء للصف الثالث المتوسط العراقي."
+            
+            response = model.generate_content([img_ref, user_caption])
+            bot.reply_to(message, response.text if response and response.text else "عذراً، لم أستطع قراءة الصورة.")
+            
+    except Exception as e:
+        print(f"Error details: {e}")
+        bot.reply_to(message, "عذراً يا بطل، حدث خطأ بسيط في الاتصال، يرجى المحاولة مرة أخرى.")
+
+# مسار استقبال الويب هوك من تيليجرام
 @app.route(f'/{TELEGRAM_BOT_TOKEN}', methods=['POST'])
 def webhook():
     json_string = request.get_data().decode('utf-8')
@@ -132,7 +174,7 @@ def webhook():
 def index():
     return "SmartSystem Biology Bot is running via Webhook!"
 
-# ضبط الويب هوك للرابط الصحيح الجديد
+# إعادة ضبط وتفعيل الويب هوك للرابط الصحيح
 bot.remove_webhook()
 bot.set_webhook(url=f"{RENDER_URL}/{TELEGRAM_BOT_TOKEN}")
 
